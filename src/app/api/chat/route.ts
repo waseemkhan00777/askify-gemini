@@ -1,6 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const genAI = new GoogleGenerativeAI(process.env.OPEN_AI_KEY ?? "");
+const genAI = new GoogleGenerativeAI(process.env.GENERATIVE_AI_API_KEY ?? "");
 
 interface IMessage {
   role: string;
