@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { FaPaperPlane } from "react-icons/fa";
 import ReactMarkdown from "react-markdown";
@@ -16,7 +16,8 @@ interface FormData {
 export default function Home() {
   const { register, handleSubmit, reset } = useForm<FormData>();
   const [messages, setMessages] = useState<IMessage[]>([]);
-  const [disableInput, setDisableInput] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   const handleGenerateMessage = useCallback(
     async (data: FormData) => {
@@ -24,7 +25,7 @@ export default function Home() {
       if (!prompt) return;
 
       setMessages(prev => [...prev, { role: "user", content: prompt }]);
-      setDisableInput(true);
+      setIsLoading(true);
 
       reset();
 
@@ -68,10 +69,11 @@ export default function Home() {
               content: assistantResponse,
             });
           }
-          setDisableInput(false);
           return updatedMessages;
         });
       }
+      setIsLoading(false);
+      inputRef?.current?.focus();
     },
     [reset],
   );
@@ -84,17 +86,26 @@ export default function Home() {
       >
         <input
           {...register("prompt")}
+          ref={e => {
+            register("prompt").ref(e);
+            inputRef.current = e;
+          }}
           className="max-w-3xl shadow-xl w-full mx-auto py-8 flex h-10 rounded-md border border-input bg-background px-3 text-sm ring-offset-background"
           placeholder="Send a message..."
-          disabled={disableInput}
+          disabled={isLoading}
         />
         <button
           type="submit"
-          className="absolute right-10 top-1/2 transform -translate-y-1/2 bg-transparent border-none cursor-pointer"
+          className={`absolute right-10 top-1/2 transform -translate-y-1/2 bg-transparent border-none cursor-${
+            isLoading ? "" : "pointer"
+          }`}
+          disabled={isLoading}
         >
           <FaPaperPlane
             size={20}
-            className="text-blue-500 hover:text-blue-800"
+            className={`text-blue-500 hover:${
+              isLoading ? "" : "text-blue-800"
+            }`}
           />
         </button>
       </form>
