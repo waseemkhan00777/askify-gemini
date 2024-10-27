@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useState } from "react";
-import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { FaPaperPlane } from "react-icons/fa";
 import ReactMarkdown from "react-markdown";
 
